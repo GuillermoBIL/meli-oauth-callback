@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Mercado Libre OAuth Callback</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 60px auto;
+            padding: 20px;
+        }
+
+        .box {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 25px;
+        }
+
+        .code {
+            background: #f5f5f5;
+            padding: 15px;
+            word-break: break-all;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+
+    <h2>Mercado Libre OAuth Callback</h2>
+
+    <div id="content">
+        Procesando autorización...
+    </div>
+
+</div>
+
+
+<script>
+
+    const params = new URLSearchParams(window.location.search);
+
+    const code = params.get("code");
+    const state = params.get("state");
+    const error = params.get("error");
+    const errorDescription = params.get("error_description");
+
+    const content = document.getElementById("content");
+
+
+    if (code) {
+
+        content.innerHTML = `
+            <p class="success">
+                Autorización recibida correctamente.
+            </p>
+
+            <p><strong>Authorization Code:</strong></p>
+
+            <div class="code" id="authorizationCode">
+                ${code}
+            </div>
+
+            ${
+                state
+                ? `<p><strong>State:</strong> ${state}</p>`
+                : ""
+            }
+
+            <button onclick="copyCode()">
+                Copiar código
+            </button>
+
+            <p>
+                Este código es temporal y será utilizado por
+                Microsoft Fabric para obtener el Access Token.
+            </p>
+        `;
+
+    }
+
+    else if (error) {
+
+        content.innerHTML = `
+            <p class="error">
+                Error durante la autorización.
+            </p>
+
+            <p>
+                <strong>Error:</strong>
+                ${error}
+            </p>
+
+            <p>
+                ${errorDescription || ""}
+            </p>
+        `;
+
+    }
+
+    else {
+
+        content.innerHTML = `
+            <p>
+                Callback disponible.
+            </p>
+
+            <p>
+                Esperando una autorización de Mercado Libre.
+            </p>
+        `;
+    }
+
+
+    function copyCode() {
+
+        const codeText =
+            document.getElementById("authorizationCode").innerText;
+
+        navigator.clipboard.writeText(codeText);
+
+        alert("Authorization Code copiado");
+    }
+
+</script>
+
+</body>
+</html>
